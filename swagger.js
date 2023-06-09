@@ -7,9 +7,8 @@ const doc = {
         title: "Farawin Test API",
         description: "برای استفاده آزمایشی..."
     },
-    host: "farawinapi.onrender.com",
     basePath: "/",
-    schemes: ['https'],
+    schemes: ['https', 'http'],
     consumes: ['application/json'],
     produces: ['application/json'],
     // tags: [
