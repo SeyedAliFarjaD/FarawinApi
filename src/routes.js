@@ -8,7 +8,7 @@ const apiV1 = require('./controllers/ApiRoute1')
 const apiV2 = require('./controllers/ApiRoute2')
 
 router.use(apiV1)
-router.use('/v2', apiV2)
+router.use('/api', apiV2)
 
 router.get('/test-get', ToolsController.show)
 router.post('/test-post', store)
