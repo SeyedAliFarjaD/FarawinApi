@@ -25,7 +25,7 @@ router.route('/user').post((req, res, next) => {
 
 
         if (data && data.includes(`"username":"${username}"`))
-            res.status(409).json({
+            return res.status(409).json({
                 code: '409',
                 message: 'موبایل تکراری است!',
             })
@@ -57,7 +57,7 @@ router.route('/user').post((req, res, next) => {
                 message: 'خطایی در ذخیره سازی اطلاعات روی داد!',
                 error: err
             })
-            res.status(200).json({
+            return res.status(200).json({
                 code: '200',
                 message: 'با موفقیت افزوده شد.',
                 user
@@ -98,10 +98,10 @@ router.route('/user/login').post((req, res, next) => {
             message: 'نام کاربری یا رمز عبور اشتباه می باشد!',
         })
 
-        const userList = JSON.parse('[' + data.slice(0, -1)  + ']');
+        const userList = JSON.parse('[' + data.slice(0, -1) + ']');
         const user = userList.find(u => u.username == username && u.password === password)
 
-        if (user) res.status(200).json({
+        if (user) return res.status(200).json({
             code: '200',
             message: user.name + ' ' + 'خوش آمدید.',
             user,
@@ -135,7 +135,7 @@ router.route('/user').get((req, res, next) => {
 
 
     fs.readFile(__dirname + "/" + "users.json", 'utf8', function (err, data) {
-        res.status(200).json({
+        return res.status(200).json({
             code: '200',
             message: 'با موفقیت دریافت شد.',
             userList: JSON.parse('[' + data.slice(0, -1) + ']')
