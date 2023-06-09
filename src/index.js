@@ -18,6 +18,7 @@ const cors = require('cors');
 /* Routes */
 const router = require('./routes')
 
+app.use(cors())
 app.use(express.json({ type: '*/*' }));
 
 /* Middlewares */
@@ -33,7 +34,6 @@ app.get('/', (req, res) => {
 //   origin: '*'
 // }));
 
-app.use(cors())
 
 app.listen(3000, () => {
   console.log("Server is running!\nAPI documentation: http://localhost:3000/doc")
