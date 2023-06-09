@@ -25,6 +25,7 @@ app.use(router)
 app.use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerFile))
 
 app.get('/', (req, res) => {
+  // #swagger.ignore = true
   res.redirect('/doc');
 });
 

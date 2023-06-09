@@ -10,9 +10,9 @@ const apiV2 = require('./controllers/ApiRoute2')
 router.use(apiV1)
 router.use('/api', apiV2)
 
-router.get('/test-get', ToolsController.show)
-router.post('/test-post', store)
-router.delete('/test-delete/:id', ToolsController.delete)
+// router.get('/test-get', ToolsController.show)
+// router.post('/test-post', store)
+// router.delete('/test-delete/:id', ToolsController.delete)
 
 function store(req, res) {
     const tools = {}
