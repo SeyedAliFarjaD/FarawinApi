@@ -67,11 +67,7 @@ router.route('/user').post((req, res, next) => {
     fs.readFile(fileName, 'utf8', function (err, data) {
 
 
-        if (data && data.includes(`"username":"${username}"`))
-            return res.status(409).json({
-                code: '409',
-                message: 'موبایل تکراری است!',
-            })
+
 
         //TODO REGEX DIGIT
         if (!username.startsWith('09') || username.length != 11)
@@ -92,6 +88,12 @@ router.route('/user').post((req, res, next) => {
                 message: ' نام و نام‌خانوداگی باید حداقل 3 کرکتر باشد!',
             })
 
+
+        if (data && data.includes(`"username":"${username}"`))
+            return res.status(409).json({
+                code: '409',
+                message: 'موبایل تکراری است!',
+            })
 
         const user = { username, password, name, date: new Date() };
         fs.appendFile(fileName, JSON.stringify(user) + ',', function (err) {
