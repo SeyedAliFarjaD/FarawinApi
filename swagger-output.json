@@ -5,10 +5,11 @@
     "title": "Farawin Test API",
     "description": "برای استفاده آزمایشی..."
   },
-  "host": "farawinapi.onrender.com",
+  "host": "",
   "basePath": "/",
   "schemes": [
-    "https"
+    "https",
+    "http"
   ],
   "consumes": [
     "application/json"

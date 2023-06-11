@@ -35,9 +35,9 @@ app.get('/', (req, res) => {
 // }));
 
 
-// app.listen(3000, () => {
-//   console.log("Server is running!\nAPI documentation: http://localhost:3000/doc")
-// })
+app.listen(3000, () => {
+  console.log("Server is running!\nAPI documentation: http://localhost:3000/doc")
+})
 
 app.listen(443, () => {
   console.log("Server is running!\nAPI documentation: http://localhost:3000/doc")

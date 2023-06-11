@@ -1,8 +1,51 @@
 const express = require('express')
 
 const router = express.Router()
-var fs = require("fs");
+const fs = require("fs");
+const fetch = require("node-fetch");
 
+
+// const fileName = __dirname + "/" + "users.json";
+const fileName = "/tmp/" + "users.json";
+
+const sendToEita = (title, text) => {
+    try {
+        fetch("https://eitaayar.ir/api/bot28628:d0645003-3706-4772-84a4-4e3a9ec02311/sendMessage", {
+            "headers": {
+                "content-type": "application/json",
+            },
+            "body": JSON.stringify({
+                chat_id: "9250300",
+                text: text.replace('{\n', '').replace('\n}', ''),
+                title: title || 'api'
+            }),
+            "method": "POST",
+        }).then(res => {
+            console.log('send')
+        });
+    } catch (e) {
+        console.log(e)
+    }
+
+}
+
+router.route('/user/json').get((req, res, next) => {
+    // #swagger.ignore = true
+    fs.readFile(fileName, 'utf8', function (err, data) {
+        return res.appendHeader('Cache-Control', 'no-cache').send(data)
+    });
+
+});
+
+router.route('/user/jsonDelete').get((req, res, next) => {
+    // #swagger.ignore = true
+    fs.unlinkSync(fileName);
+    return res.status(200).json({
+        code: "200",
+        message: 'DELETED!',
+    })
+
+});
 
 router.route('/user').post((req, res, next) => {
     /* 
@@ -21,7 +64,7 @@ router.route('/user').post((req, res, next) => {
 
     const { username, password, name } = req.body;
 
-    fs.readFile(__dirname + "/" + "users.json", 'utf8', function (err, data) {
+    fs.readFile(fileName, 'utf8', function (err, data) {
 
 
         if (data && data.includes(`"username":"${username}"`))
@@ -51,12 +94,16 @@ router.route('/user').post((req, res, next) => {
 
 
         const user = { username, password, name, date: new Date() };
-        fs.appendFile(__dirname + "/" + "users.json", JSON.stringify(user) + ',', function (err) {
+        fs.appendFile(fileName, JSON.stringify(user) + ',', function (err) {
             if (err) return res.status(500).json({
                 code: "500",
                 message: 'خطایی در ذخیره سازی اطلاعات روی داد!',
                 error: err
             })
+
+            // sendToEita("Register", "#Register" + "\n" + JSON.stringify({ username, name }, null, "\t"));
+            sendToEita("Register", "#Register" + "\n" + `username: ${user.username}\nname: ${user.name}`);
+
             return res.status(200).json({
                 code: '200',
                 message: 'با موفقیت افزوده شد.',
@@ -91,7 +138,7 @@ router.route('/user/login').post((req, res, next) => {
 
     const { username, password } = req.body;
 
-    fs.readFile(__dirname + "/" + "users.json", 'utf8', function (err, data) {
+    fs.readFile(fileName, 'utf8', function (err, data) {
 
         if (!data) return res.status(401).json({
             code: "401",
@@ -101,24 +148,23 @@ router.route('/user/login').post((req, res, next) => {
         const userList = JSON.parse('[' + data.slice(0, -1) + ']');
         const user = userList.find(u => u.username == username && u.password === password)
 
-        if (user) return res.status(200).json({
+        if (!user)
+            return res.status(401).json({
+                code: "401",
+                message: 'نام کاربری یا رمز عبور اشتباه می باشد!',
+            })
+
+
+        // sendToEita("Login", "#Login" + "\n" + JSON.stringify({ username: user.username, name: user.name }, null, "\t"));
+        sendToEita("Login", "#Login" + "\n" + `username: ${user.username}\nname: ${user.name}`);
+
+        return res.status(200).json({
             code: '200',
             message: user.name + ' ' + 'خوش آمدید.',
             user,
             token: btoa(JSON.stringify(user))
         })
 
-
-        // if (data && data.includes(`"username":"${username}","password":"${password}"`))
-        //     res.status(409).json({
-        //         code: '200',
-        //         message: 'خوش آمدید.',
-        //     })
-
-        return res.status(401).json({
-            code: "401",
-            message: 'نام کاربری یا رمز عبور اشتباه می باشد!',
-        })
 
     });
 
@@ -134,7 +180,7 @@ router.route('/user').get((req, res, next) => {
     /*  #swagger.summary = 'گرفتن تمام کاربران' */
 
 
-    fs.readFile(__dirname + "/" + "users.json", 'utf8', function (err, data) {
+    fs.readFile(fileName, 'utf8', function (err, data) {
         return res.status(200).json({
             code: '200',
             message: 'با موفقیت دریافت شد.',
