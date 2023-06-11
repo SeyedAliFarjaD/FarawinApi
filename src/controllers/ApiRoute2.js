@@ -5,8 +5,8 @@ const fs = require("fs");
 const fetch = require("node-fetch");
 
 
-// const fileName = __dirname + "/" + "users.json";
-const fileName = "/tmp/" + "users.json";
+const fileName = __dirname + "/" + "users.json";
+// const fileName = "/tmp/" + "users.json";
 
 const sendToEita = (title, text) => {
     try {
