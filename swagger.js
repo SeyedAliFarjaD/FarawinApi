@@ -5,19 +5,26 @@ const doc = {
     info: {
         version: "1.0.0",
         title: "Farawin Test API",
-        description: "برای استفاده آزمایشی..."
+        description: "برای استفاده آزمایشی... \n username = mobile (regex /^09([0-9]{9})/)"
     },
-    host:"",
+    host: "",
     basePath: "/",
     schemes: ['https', 'http'],
     consumes: ['application/json'],
     produces: ['application/json'],
-    // tags: [
-    //     {
-    //         "name": "User",
-    //         "description": "Endpoints"
-    //     }
-    // ],
+    tags: [
+        {
+            "name": "User",
+            "description": "کاربران"
+        },
+        {
+            "name": "Contact",
+            "description": "مخاطبین"
+        }, {
+            "name": "Chat",
+            "description": "چت ها"
+        }
+    ],
     // securityDefinitions: {
     //     apiKeyAuth:{
     //         type: "apiKey",

@@ -5,29 +5,10 @@ const fs = require("fs");
 const fetch = require("node-fetch");
 
 
-const fileName = __dirname + "/" + "users.json";
-// const fileName = "/tmp/" + "users.json";
+const { authenticate, getContact, sendToEita, baseUrl } = require("../middlewares/auth");
 
-const sendToEita = (title, text) => {
-    try {
-        fetch("https://eitaayar.ir/api/bot28628:d0645003-3706-4772-84a4-4e3a9ec02311/sendMessage", {
-            "headers": {
-                "content-type": "application/json",
-            },
-            "body": JSON.stringify({
-                chat_id: "9250300",
-                text: text.replace('{\n', '').replace('\n}', ''),
-                title: title || 'api'
-            }),
-            "method": "POST",
-        }).then(res => {
-            console.log('send')
-        });
-    } catch (e) {
-        console.log(e)
-    }
+const fileName = baseUrl + "users.json";
 
-}
 
 router.route('/user/json').get((req, res, next) => {
     // #swagger.ignore = true
@@ -49,6 +30,7 @@ router.route('/user/jsonDelete').get((req, res, next) => {
 
 router.route('/user').post((req, res, next) => {
     /* 
+    #swagger.tags = ['User']
     #swagger.summary = 'ثبت نام'
     #swagger.parameters['body'] = {
         in: 'body',
@@ -126,6 +108,7 @@ router.route('/user').post((req, res, next) => {
 
 router.route('/user/login').post((req, res, next) => {
     /* 
+    #swagger.tags = ['User']
     #swagger.summary = 'ورود'
     #swagger.parameters['body'] = {
         in: 'body',
@@ -147,7 +130,7 @@ router.route('/user/login').post((req, res, next) => {
             message: 'نام کاربری یا رمز عبور اشتباه می باشد!',
         })
 
-        const userList = JSON.parse('[' + data.slice(0, -1) + ']');
+        const userList = JSON.parse('[' + (data?.slice(0, -1) || '') + ']');
         const user = userList.find(u => u.username == username && u.password === password)
 
         if (!user)
@@ -178,15 +161,27 @@ router.route('/user/login').post((req, res, next) => {
     // })
 })
 
-router.route('/user').get((req, res, next) => {
-    /*  #swagger.summary = 'گرفتن تمام کاربران' */
+router.route('/user').get(async (req, res, next) => {
+    /*  
+     #swagger.tags = ['User']
+     #swagger.summary = 'گرفتن تمام کاربران' */
 
+    const params = {
+        Bucket: process.env.LIARA_BUCKET_NAME,
+        Key: "objectkey"
+    };
+    try {
+        const object = await client.getObject(params).promise();
+        console.log(object)
+    } catch (error) {
+        console.log(error);
+    }
 
     fs.readFile(fileName, 'utf8', function (err, data) {
         return res.status(200).json({
             code: '200',
             message: 'با موفقیت دریافت شد.',
-            userList: JSON.parse('[' + data.slice(0, -1) + ']')
+            userList: JSON.parse('[' + (data?.slice(0, -1) || '') + ']')
         })
     });
 

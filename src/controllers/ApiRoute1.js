@@ -4,55 +4,10 @@ const router = express.Router()
 const fs = require("fs");
 const fetch = require("node-fetch");
 
+const { authenticate, getContact, sendToEita, baseUrl } = require("../middlewares/auth");
 
-const authenticate = (req, res, next) => {
-    const authHeader = req.headers.authorization;
+const fileName = baseUrl + "contacts.json";
 
-    if (authHeader) {
-        const token = authHeader.split(' ')[1] || authHeader;
-
-        try {
-            const user = JSON.parse(atob(token))
-            req.user = user;
-            return next();
-        } catch { }
-
-        return res.status(403).json({
-            code: "403",
-            message: 'توکن صحیح نمی باشد!',
-        })
-
-    }
-
-    return res.status(401).json({
-        code: "401",
-        message: 'زرنگی توکن نفرستادی!',
-    })
-};
-
-const fileName = __dirname + "/" + "contacts.json";
-// const fileName = "/tmp/" + "contacts.json";
-
-const sendToEita = (title, text) => {
-    try {
-        fetch("https://eitaayar.ir/api/bot28628:d0645003-3706-4772-84a4-4e3a9ec02311/sendMessage", {
-            "headers": {
-                "content-type": "application/json",
-            },
-            "body": JSON.stringify({
-                chat_id: "9250300",
-                text: text.replace('{\n', '').replace('\n}', ''),
-                title: title || 'api'
-            }),
-            "method": "POST",
-        }).then(res => {
-            console.log('send')
-        });
-    } catch (e) {
-        console.log(e)
-    }
-
-}
 
 router.route('/contact/json').get((req, res, next) => {
     // #swagger.ignore = true
@@ -74,6 +29,7 @@ router.route('/contact/jsonDelete').get((req, res, next) => {
 
 router.route('/contact').post(authenticate, (req, res, next) => {
     /* 
+    #swagger.tags = ['Contact']
     #swagger.summary = 'افزودن مخاطب'
     #swagger.parameters['body'] = {
         in: 'body',
@@ -148,35 +104,21 @@ router.route('/contact').post(authenticate, (req, res, next) => {
 
 
 router.route('/contact').get(authenticate, (req, res, next) => {
-    /*  #swagger.summary = 'گرفتن تمام مخاطبین' */
+    /*  
+    #swagger.tags = ['Contact']
+    #swagger.summary = 'گرفتن تمام مخاطبین' */
 
 
     fs.readFile(fileName, 'utf8', function (err, data) {
         return res.status(200).json({
             code: '200',
             message: 'با موفقیت دریافت شد.',
-            contactList: JSON.parse('[' + data.slice(0, -1) + ']')
+            contactList: JSON.parse('[' + (data?.slice(0, -1) || '') + ']')
         })
     });
 
 
 })
 
-
-
-// router.route('/test-get').get(authorize, (req, res, next) => {
-//     // #swagger.description = "Description here..."
-//     res.status(200).json({
-//         data: [],
-//         message: 'Successfully found'
-//     })
-// })
-
-// router.route('/test-delete/:id').delete(authorize, async (req, res, next) => {
-//     res.status(200).json({
-//         msg: [],
-//         message: 'Delete!'
-//     })
-// })
 
 module.exports = router
